@@ -1,14 +1,11 @@
-`include "Transaction1.sv"
+`include "generator.sv"
 `define DRIV_IF mem_vif.DRIVER.driver_cb
 
 class driver;
-
-   int b;
- 
+	
   //creating virtual interface handle
   virtual mem_intf mem_vif;
-
-  rand transaction trans;
+	
   mailbox gen2driv;
    
   function new(virtual mem_intf mem_vif,mailbox gen2driv);
@@ -36,36 +33,36 @@ class driver;
   endtask
 
   task write;
-      transaction trans;
-       gen2driv.get(trans);
+      burst bst;
+	  gen2driv.get(bst);
       if(`DRIV_IF.HREADYOUT && !`DRIV_IF.HRESP)
 	begin
 	`DRIV_IF.HSEL 	<= 1;
 	`DRIV_IF.HREADY	<= 1;
 	`DRIV_IF.HWRITE	<= 1;
-	`DRIV_IF.HADDR 	<= trans.HADDR;
-	`DRIV_IF.HSIZE	<= trans.HSIZE;
-	`DRIV_IF.HBURST	<= trans.HBURST;
-	`DRIV_IF.HPROT	<= trans.HPROT;
-	`DRIV_IF.HTRANS	<= trans.HTRANS;
+	`DRIV_IF.HADDR 	<= bst.HADDR;
+	`DRIV_IF.HSIZE	<= bst.HSIZE;
+	`DRIV_IF.HBURST	<= bst.HBURST;
+	`DRIV_IF.HPROT	<= bst.HPROT;
+	`DRIV_IF.HTRANS	<= bst.HTRANS;
 	@(posedge mem_vif.DRIVER.clk)
-	`DRIV_IF.HWDATA	<= trans.HWDATA;
+	`DRIV_IF.HWDATA	<= bst.HWDATA;
 	end
 endtask
 
 task read;
-      transaction trans;
-       gen2driv.get(trans);
+      burst bst;
+	gen2driv.get(bst);
       if(`DRIV_IF.HREADYOUT && !`DRIV_IF.HRESP)
 	begin
 	`DRIV_IF.HSEL 	<= 1;
 	`DRIV_IF.HREADY	<= 1;
 	`DRIV_IF.HWRITE	<= 0;
-	`DRIV_IF.HADDR 	<= trans.HADDR;
-	`DRIV_IF.HSIZE	<= trans.HSIZE;
-	`DRIV_IF.HBURST	<= trans.HBURST;
-	`DRIV_IF.HPROT	<= trans.HPROT;
-	`DRIV_IF.HTRANS	<= trans.HTRANS;
+	`DRIV_IF.HADDR 	<= bst.HADDR;
+	`DRIV_IF.HSIZE	<= bst.HSIZE;
+	`DRIV_IF.HBURST	<= bst.HBURST;
+	`DRIV_IF.HPROT	<= bst.HPROT;
+	`DRIV_IF.HTRANS	<= bst.HTRANS;
 	end    
   endtask 
 task run();
