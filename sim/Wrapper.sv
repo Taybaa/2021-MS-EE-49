@@ -1,5 +1,5 @@
 interface wrap (input bit HCLK,HRESET);
-   logic [31:0] HADDR;
+   logic [7:0] HADDR;
    logic [31:0] HRDATA;
    logic [31:0] HWDATA;
    logic [3:0] HPROT;
