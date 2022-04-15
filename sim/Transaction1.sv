@@ -1,5 +1,5 @@
 class transaction;
-rand 	logic 	[31:0] 	HADDR;
+  rand 	logic 	[7:0] 	HADDR;
 rand logic 		HWRITE; 
 rand logic	[2:0]  	HSIZE;
 rand logic	[2:0] 	HBURST;
@@ -10,8 +10,4 @@ logic 		HREADYOUT;
 logic 		HRESP;
 logic 	[31:0] 	HRDATA;
 
-
-function void print(string tag="");
-$display ("T=%0t [%s] HADDR=0x%0h HWDATA=0x%0h HRDATA=0x%0h HWRITE=%d",$time,tag,HADDR,HWDATA,HRDATA,HWRITE);
-endfunction
 endclass
