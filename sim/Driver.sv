@@ -1,4 +1,4 @@
-`include "generator.sv"
+`include "Generator.sv"
 `define DRIV_IF mem_vif.DRIVER.driver_cb
 
 class driver;
