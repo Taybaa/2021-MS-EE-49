@@ -1,6 +1,4 @@
 `include "Transaction1.sv"
-//.....Generator Class.....//
-
 class generator;
  rand burst bst;
   //declaring mailbox
@@ -14,69 +12,70 @@ localparam BYTE		= 000;
  function new(mailbox gen2driv);
     this.gen2driv <= gen2driv;    
   endfunction
-	
-task make_burst(input [2:0] burst_type, input [2:0] burst_size, int wrap_or_incr_size);
+
+task create_burst(input [2:0] br_type, input [2:0] br_size, int incrwrap_size);
 int wrap = 0;
 int addr;
-addr = HADDR;
-if(burst_type == 3'b010 || 3'b100 || 3'b110)
+addr = this.bst.HADDR;
+if(br_type == 3'b010 || 3'b100 || 3'b110)
 begin
 	for(int i = 0;i < 40;i++)
 		begin
-		if( wrap <wrap_or_incr_size) 
+		if( wrap <incrwrap_size) 
 		begin
-		HADDR 	<= HADDR + 1;
+		this.bst.HADDR 	<= this.bst.HADDR + 1;
 		wrap++;
 		end
 		else 
 		begin
-		HADDR 	<= addr;
+		this.bst.HADDR 	<= addr;
 		wrap 	 = 0;
 		end
-		HSIZE 	<= burst_size;			
-		HBURST 	<= burst_type;
+		this.bst.HSIZE 	<= br_size;			
+		this.bst.HBURST 	<= br_type;
 		if(i==0)
-			HTRANS <= 2'b10;
-		else 	HTRANS <= 2'b11;
-		HPROT 	<= 4'b0011;
+			this.bst.HTRANS <= 2'b10;
+		else 	this.bst.HTRANS <= 2'b11;
+		this.bst.HPROT 	<= 4'b0011;
 	end
 end
 else
 begin
-	for(int i = 0;i <  wrap_or_incr_size;i++)
+	for(int i = 0;i <  incrwrap_size;i++)
 	begin
 		if(i> 0) 
-			HADDR 	<= HADDR + 1;
+			this.bst.HADDR 	<= this.bst.HADDR + 1;
 		if(i==0)
-			HTRANS 	<= 2'b10;
+			this.bst.HTRANS 	<= 2'b10;
 		else 	
-			HTRANS 	<= 2'b11;
-		HPROT	<= 4'b0011;
-		HSIZE 	<= burst_size;			
-		HBURST 	<= burst_type;
+			this.bst.HTRANS 	<= 2'b11;
+		this.bst.HPROT	<= 4'b0011;
+		this.bst.HSIZE 	<= br_size;			
+		this.bst.HBURST 	<= br_type;
 	end
 end
 	
 
-endtask 
+endtask
+
 task single_burst();
 bst=new;
 bst.randomize();
-bst.create(3'b001,BYTE,100);
+bst.create_burst(3'b001,BYTE,100);
 gen2drive.put(bst);
 endtask	
 	
 task wrap4_burst();
 bst=new;
 bst.randomize();
-bst.create(3'b010,BYTE,4);
+bst.create_burst(3'b010,BYTE,4);
 gen2drive.put(bst);
 endtask	
 
 task incr4_burst();
 bst=new;
 bst.randomize();
-bst.create(3'b011,BYTE,4);
+bst.create_burst(3'b011,BYTE,4);
 gen2drive.put(bst);
 endtask	
 	
@@ -86,3 +85,4 @@ incr4_burst();
 wrap4_burst();
 endtask
 endclass
+
