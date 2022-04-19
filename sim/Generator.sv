@@ -1,17 +1,21 @@
 `include "Transaction1.sv"
-class burst;
-rand 	logic 	[7:0] 	HADDR;
-rand logic 		HWRITE; 
-rand logic	[2:0]  	HSIZE;
-rand logic	[2:0] 	HBURST;
-rand logic 	[3:0] 	HPROT;
-rand logic	[1:0]	HTRANS;
-rand	logic 	[31:0] 	HWDATA;
-logic 		HREADYOUT;
-logic 		HRESP;
-logic 	[31:0] 	HRDATA;
+//.....Generator Class.....//
+
+class generator;
+ rand burst bst;
+  //declaring mailbox
+  mailbox gen2driv;
 	
-task create(input [2:0] burst_type, input [2:0] burst_size, int wrap_or_incr_size);
+//.....Size......//
+localparam WORD		= 010;
+localparam H_WORD	= 001;
+localparam BYTE		= 000;
+	
+ function new(mailbox gen2driv);
+    this.gen2driv <= gen2driv;    
+  endfunction
+	
+task make_burst(input [2:0] burst_type, input [2:0] burst_size, int wrap_or_incr_size);
 int wrap = 0;
 int addr;
 addr = HADDR;
@@ -55,24 +59,6 @@ end
 	
 
 endtask 
-endclass
-
-//.....Generator Class.....//
-
-class generator;
- rand burst bst;
-  //declaring mailbox
-  mailbox gen2driv;
-	
-//.....Size......//
-localparam WORD		= 010;
-localparam H_WORD	= 001;
-localparam BYTE		= 000;
-	
- function new(mailbox gen2driv);
-    this.gen2driv <= gen2driv;    
-  endfunction
-
 task single_burst();
 bst=new;
 bst.randomize();
