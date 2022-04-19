@@ -1,5 +1,5 @@
-class transaction;
-  rand 	logic 	[7:0] 	HADDR;
+class burst;
+rand 	logic 	[7:0] 	HADDR;
 rand logic 		HWRITE; 
 rand logic	[2:0]  	HSIZE;
 rand logic	[2:0] 	HBURST;
