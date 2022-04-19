@@ -60,21 +60,21 @@ endtask
 
 task single_burst();
 bst=new;
-randomize();
+bst.randomize();
 create_burst(3'b001,BYTE,100);
 gen2drive.put(bst);
 endtask	
 	
 task wrap4_burst();
 bst=new;
-randomize();
+bst.randomize();
 create_burst(3'b010,BYTE,4);
 gen2drive.put(bst);
 endtask	
 
 task incr4_burst();
 bst=new;
-randomize();
+bst.randomize();
 create_burst(3'b011,BYTE,4);
 gen2drive.put(bst);
 endtask	
