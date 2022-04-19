@@ -1,4 +1,4 @@
-`include "Transaction1.sv"
+`include "Transaction.sv"
 class generator;
  rand burst bst;
   //declaring mailbox
