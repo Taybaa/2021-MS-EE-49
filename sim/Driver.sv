@@ -1,73 +1,81 @@
-`include "Generator.sv"
-`define DRIV_IF mem_vif.DRIVER.driver_cb
-
+`include "Transaction.sv"
 class driver;
+
+
+event ended;
 	
-  //creating virtual interface handle
-  virtual mem_intf mem_vif;
+//creating virtual interface handle
+virtual ahb_intf.Driver driver_if;
 	
-  mailbox gen2driv;
+mailbox gen2driv;
    
-  function new(virtual mem_intf mem_vif,mailbox gen2driv);
-    //getting the interface
-    this.mem_vif = mem_vif;
-    //getting the mailbox handle from  environment
-    this.gen2driv = gen2driv;
-  endfunction
+function new(virtual ahb_intf.Driver driver_if,mailbox gen2driv);
+//getting the interface
+this.driver_if = driver_if;
+//getting the mailbox handle from  environment
+this.gen2driv = gen2driv;
+endfunction
    
 
-  //Reset task, Reset the Interface signals to default/initial values
-  task reset;
-    wait(mem_vif.HRESET);
-    $display("--------- [DRIVER] Reset Started ---------");
-	`DRIV_IF.HADDR	<= '0;
-	`DRIV_IF.HWDATA	<= '0;
-	`DRIV_IF.HWRITE	<= '0;
-	`DRIV_IF.HSIZE	<= '0;
-	`DRIV_IF.HBURST <= '0;
-	`DRIV_IF.HPROT	<= '0;
-	`DRIV_IF.HTRANS	<= '0;
-	`DRIV_IF.HREADY	<= '0;       
-    wait(!mem_vif.HRESET);
+//Reset task, Reset the Interface signals to default/initial values
+task reset;
+wait(driver_if.HRESET);
+$display("--------- [DRIVER] Reset Started ---------");
+	driver_if.HADDR	<= '0;
+	driver_if.HWDATA<= '0;
+	driver_if.HWRITE<= '0;
+	driver_if.HSIZE	<= '0;
+	driver_if.HBURST<= '0;
+	driver_if.HPROT<= '0;
+	driver_if.HTRANS<= '0;
+	driver_if.HREADY<= '0; 
+        driver_if.HRESP  <= 0;      
+    wait(!driver_if.HRESET);
     $display("--------- [DRIVER] Reset Ended---------");
   endtask
 
   task write;
       burst bst;
 	  gen2driv.get(bst);
-      if(`DRIV_IF.HREADYOUT && !`DRIV_IF.HRESP)
+
+      if(driver_if.HREADYOUT && !driver_if.HRESP)
 	begin
-	`DRIV_IF.HSEL 	<= 1;
-	`DRIV_IF.HREADY	<= 1;
-	`DRIV_IF.HWRITE	<= 1;
-	`DRIV_IF.HADDR 	<= bst.HADDR;
-	`DRIV_IF.HSIZE	<= bst.HSIZE;
-	`DRIV_IF.HBURST	<= bst.HBURST;
-	`DRIV_IF.HPROT	<= bst.HPROT;
-	`DRIV_IF.HTRANS	<= bst.HTRANS;
-	@(posedge mem_vif.DRIVER.clk)
-	`DRIV_IF.HWDATA	<= bst.HWDATA;
+	driver_if.HSEL 	<= 1;
+	driver_if.HREADY<= 1;
+	driver_if.HWRITE<= 1;
+	driver_if.HADDR <= bst.HADDR;
+	driver_if.HSIZE	<= bst.HSIZE;
+	driver_if.HBURST<= bst.HBURST;
+	driver_if.HPROT	<= bst.HPROT;
+	driver_if.HTRANS<= bst.HTRANS;
+	@(posedge driver_if.HCLK)
+	driver_if.HWDATA<= bst.HWDATA;
+->ended;
 	end
 endtask
 
 task read;
       burst bst;
 	gen2driv.get(bst);
-      if(`DRIV_IF.HREADYOUT && !`DRIV_IF.HRESP)
+      if(driver_if.HREADYOUT && !driver_if.HRESP)
 	begin
-	`DRIV_IF.HSEL 	<= 1;
-	`DRIV_IF.HREADY	<= 1;
-	`DRIV_IF.HWRITE	<= 0;
-	`DRIV_IF.HADDR 	<= bst.HADDR;
-	`DRIV_IF.HSIZE	<= bst.HSIZE;
-	`DRIV_IF.HBURST	<= bst.HBURST;
-	`DRIV_IF.HPROT	<= bst.HPROT;
-	`DRIV_IF.HTRANS	<= bst.HTRANS;
+	driver_if.HSEL 	<= 1;
+	driver_if.HREADY<= 1;
+	driver_if.HWRITE<= 0;
+	driver_if.HADDR <= bst.HADDR;
+	driver_if.HSIZE	<= bst.HSIZE;
+	driver_if.HBURST<= bst.HBURST;
+	driver_if.HPROT	<= bst.HPROT;
+	driver_if.HTRANS<= bst.HTRANS;
 	end    
+
+      
   endtask 
+ 
 task run();
-	reset();
+forever begin
 	write();
 	read(); 
+end
 endtask       
 endclass
