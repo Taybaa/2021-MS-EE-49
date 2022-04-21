@@ -1,21 +1,22 @@
-interface AHB_if(input HCLK);
-  logic				HRESET;
+interface ahb_intf(input bit HCLK,HRESET);
+  
   logic                       	HSEL;
-  logic      			HADDR;
-  logic       			HWDATA;
-  logic       			HRDATA;
+  logic [7:0]    		HADDR;
+  logic   [31:0]     			HWDATA;
+  logic [31:0]      			HRDATA;
   logic                       	HWRITE;
-  logic      			HSIZE;
-  logic       			HBURST;
-  logic       			HPROT;
-  logic       			HTRANS;
+  logic [2:0]   		HSIZE;
+  logic [2:0]     		HBURST;
+  logic [3:0]     		HPROT;
+  logic  [1:0]     			HTRANS;
   logic                       	HREADYOUT;
   logic                       	HREADY;
   logic                       	HRESP;
+  logic           		HMASTLOCK;
 
  modport DUT(
-      	input  		HRESET,
-      	input  		HCLK,
+      	
+      	
       	input   	HSEL,
   	input   	HADDR,
  	input   	HWDATA,
@@ -26,12 +27,14 @@ interface AHB_if(input HCLK);
   	input       	HPROT,
   	input       	HTRANS,
   	output 		HREADYOUT,
-  	input           HREADY,
+  	input           HMASTLOCK,
   	output          HRESP
+
   );
  modport Driver(
-      	output  	HRESET,
-      	output  	HCLK,
+      	input   	HRESET,
+      	input   	HCLK,
+        input 		HRDATA,
       	output   	HSEL,
   	output   	HADDR,
  	output   	HWDATA,
@@ -40,25 +43,25 @@ interface AHB_if(input HCLK);
   	output       	HBURST,
   	output       	HPROT,
   	output       	HTRANS,
-  	output          HREADY,
-	input 		HREADYOUT,
+  	input           HREADY,
+        output          HMASTLOCK,
 	input          HRESP
   );
 
  modport Monitor(
 	input  		HRESET,
-      	input  		HCLK,
+      	
       	input   	HSEL,
   	input   	HADDR,
  	input   	HWDATA,
-  	input           HWRITE,
   	input       	HSIZE,
   	input       	HBURST,
   	input       	HPROT,
   	input       	HTRANS,
-  	input           HREADY,	
-	input 		HRDATA,
+  	input 		HRDATA,
 	input 		HREADYOUT,
+        input           HMASTLOCK,
 	input          HRESP);
 endinterface
+
 
